@@ -2,14 +2,17 @@
 
 gówno
 
-<h1>Red Pawns</h1>
-
-{% for pawn in red_pawns %}
-        <p>Color: {{ pawn.color }}, Position: {{ pawn.position }}</p>
-        <form method="post">
-            <button type="submit" name="submit" value="move_{{ loop.index }}">Move me!</button>
-        </form>
+{% for row in pawns %}
+    <div>
+        {% for pawn in row %}
+            <p>Color: {{ pawn.color }}, Position: {{ pawn.position }}</p>
+            <form method="post">
+                <button type="submit" name="submit" value="move_{{ pawn.color }}_{{ loop.index0 }}">Move me!</button>
+            </form>
+        {% endfor %}
+    </div>
 {% endfor %}
+
 
     <form method="post">
         <button type="submit" name="submit" value="rollDice">Roll!</button>
