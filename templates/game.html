@@ -1,0 +1,22 @@
+{% block body %}
+
+gówno
+
+<h1>Red Pawns</h1>
+
+{% for pawn in red_pawns %}
+        <p>Color: {{ pawn.color }}, Position: {{ pawn.position }}</p>
+        <form method="post">
+            <button type="submit" name="submit" value="move_{{ loop.index }}">Move me!</button>
+        </form>
+{% endfor %}
+
+    <form method="post">
+        <button type="submit" name="submit" value="rollDice">Roll!</button>
+    </form>
+    {% if roll_result %}
+        <p>{{ roll_result }}</p>
+    {% endif %}
+
+
+{% endblock %}
