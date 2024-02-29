@@ -1,0 +1,14 @@
+/* body {
+    background-image: url('../board.jpeg');
+    background-repeat: no-repeat;
+
+    background-position: center center;
+    background-size: 50% auto;
+    background-size: 3em 25%;
+    background-size: auto 6px;
+    background-size: auto auto;
+} */
+
+#sourceImage {
+    visibility:hidden;
+}

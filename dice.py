@@ -1,9 +1,7 @@
 import random
+from flask import session
 
-class Dice:
-    def __init__(self, sides=6):
-        self.sides = sides
-
-    def roll(self):
-        return random.randint(1, self.sides)
-
+def rollDice():
+    dice_result = random.randint(1, 6)
+    session['dice_result'] = dice_result
+    return dice_result

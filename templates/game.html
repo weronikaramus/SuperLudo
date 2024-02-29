@@ -1,25 +1,161 @@
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<style>
+    body {
+        margin: 0;
+        overflow: hidden; /* Hide scrollbars */
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    table {
+        border-collapse: collapse;
+        table-layout: fixed
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        width: 59px;
+        height: 59px;
+        text-align: center;
+
+    }
+    button{
+        display: inline;}
+
+    .table-cell__content{
+        margin: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+    form{
+        margin: 0;
+    }
+    .cell-empty{
+        background-color: white;
+        border: none;
+    }
+
+    .cell-middle{
+        border: none;
+    }
+
+    .red{
+    background-color: red;
+    }
+
+    .green{
+    background-color: green;
+    }
+
+    .blue{
+    background-color: blue;
+    }
+
+    .yellow{
+    background-color: yellow;
+    }
+    .game-status{
+    margin: 16px;
+    align-items: center;
+    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    }
+
+</style>
+{% endblock %}
 {% block body %}
 
-gówno
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sourceImage = document.getElementById("sourceImage");
+            const outputCanvas = document.getElementById("outputCanvas");
+            const context = outputCanvas.getContext("2d");
 
-{% for row in pawns %}
-    <div>
-        {% for pawn in row %}
-            <p>Color: {{ pawn.color }}, Position: {{ pawn.position }}</p>
-            <form method="post">
-                <button type="submit" name="submit" value="move_{{ pawn.color }}_{{ loop.index0 }}">Move me!</button>
-            </form>
-        {% endfor %}
+            function resizeCanvas() {
+                outputCanvas.height = window.innerHeight * 0.8;
+                outputCanvas.width = outputCanvas.height;
+            }
+
+            resizeCanvas();
+
+            sourceImage.onload = function() {
+                context.drawImage(sourceImage, 0, 0, outputCanvas.width, outputCanvas.height);
+            };
+        });
+    </script>
+
+<div class="game-status" display="inline-block">
+    <h1>Current Player: {{ colors[current_player] }}</h1>
+    {% if not roll_result %}
+    <div class="dice">
+        <form method="post">
+            <button type="submit" name="submit" value="rollDice">Roll!</button>
+        </form>
     </div>
-{% endfor %}
-
-
-    <form method="post">
-        <button type="submit" name="submit" value="rollDice">Roll!</button>
-    </form>
-    {% if roll_result %}
-        <p>{{ roll_result }}</p>
     {% endif %}
+    {% if roll_result %}
+        <p>Dice roll result: {{ roll_result }}</p>
+    {% endif %}
+</div>
+    <div>
+        <table>
+            <tbody>
+                {% for row in range(15) %}
+                <tr>
+                    {% for col in range(15) %}
+                        {% set cell_number = row * 15 + col %}
 
+                        {% if row in range(6, 9) and col in range(6, 9) %}
+                            <td class="cell-middle">
+                            </td>
+                        {% elif (row in range(0, 6) and col in range(0, 6)) or (row in range(9, 15) and col in range(0, 6)) or (row in range(0, 6) and col in range(9, 15)) or  (row in range(9, 15) and col in range(9, 15)) %}
+                        <td class="cell-empty">
+                        </td>
 
+                        {% elif (row in range(1, 6) and col == 7) or (row == 7 and col in range(1, 6)) or (row == 7 and col in range(9, 14)) or (row in range(9, 14) and col == 7) %}
+                            <td class="cell-middle"></td>
+
+                        {% else %}
+
+                        <td class="{% if cell_number == 91 %}red{% elif cell_number == 23 %}green{% elif cell_number == 133 %}blue{% elif cell_number == 201 %}yellow{% endif %}">
+                            <div class="table-cell__content">
+                                {% for row_pawns in pawns %}
+                                    {% set color_index = loop.index0 %}
+                                    {% for pawn in row_pawns %}
+                                        {% if pawn.position == board_dictionary.get(cell_number) and not pawn.finished %}
+                                            {% if colors[current_player] == pawn.color and roll_result and pawn.canMove(session['dice_result']) %}
+                                                <form method="post">
+                                                    <button type="submit" name="submit" value="move_{{ pawn.color }}_{{ loop.index0 }}">
+                                                        <img src="{{ url_for('static', filename=color_index ~ loop.index0 ~ '.png') }}" alt="" height="15px" width="10px">
+                                                    </button>
+                                                </form>
+
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename=color_index ~ loop.index0 ~ '.png') }}" alt="" height="30px" width="20px">
+                                            {% endif %}
+
+                                        {% endif %}
+                                    {% endfor %}
+
+                                {% endfor %}
+                                {% if cell_number == 105 or cell_number == 7 or cell_number == 119 or cell_number == 217 %}
+                                    *
+                                {% endif %}
+                            </div>
+                        </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
